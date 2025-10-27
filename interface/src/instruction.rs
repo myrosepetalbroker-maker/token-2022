@@ -2669,6 +2669,76 @@ mod test {
         ));
     }
 
+    #[test]
+    fn test_batch_packing() {
+        // Test batch instruction with two inner instructions
+        let transfer = TokenInstruction::TransferChecked {
+            amount: 100,
+            decimals: 6,
+        };
+        let approve = TokenInstruction::Approve {
+            amount: 50,
+        };
+        
+        let batch = TokenInstruction::Batch {
+            instructions: vec![transfer.clone(), approve.clone()],
+        };
+        
+        // Test packing
+        let packed = batch.pack();
+        
+        // Expected format:
+        // [45] (batch discriminator)
+        // [2] (number of instructions)
+        // [10, 0] (length of first instruction - TransferChecked)
+        // [12, 100, 0, 0, 0, 0, 0, 0, 0, 6] (TransferChecked data)  
+        // [9, 0] (length of second instruction - Approve)
+        // [4, 50, 0, 0, 0, 0, 0, 0, 0] (Approve data)
+        
+        assert_eq!(packed[0], 45); // Batch discriminator
+        assert_eq!(packed[1], 2);  // Number of instructions
+        
+        // Test unpacking
+        let unpacked = TokenInstruction::unpack(&packed).unwrap();
+        match unpacked {
+            TokenInstruction::Batch { instructions } => {
+                assert_eq!(instructions.len(), 2);
+                assert_eq!(instructions[0], transfer);
+                assert_eq!(instructions[1], approve);
+            }
+            _ => panic!("Expected batch instruction"),
+        }
+    }
+
+    #[test]
+    fn test_batch_helper() {
+        let token_program_id = crate::id();
+        
+        // Test valid batch
+        let transfer = TokenInstruction::TransferChecked {
+            amount: 100,
+            decimals: 6,
+        };
+        let approve = TokenInstruction::Approve {
+            amount: 50,
+        };
+        
+        let instruction = batch(&token_program_id, vec![transfer, approve]).unwrap();
+        assert_eq!(instruction.program_id, token_program_id);
+        assert!(!instruction.data.is_empty());
+        
+        // Test empty batch (should fail)
+        let result = batch(&token_program_id, vec![]);
+        assert!(result.is_err());
+        
+        // Test oversized batch (should fail)
+        let large_batch: Vec<TokenInstruction> = (0..20)
+            .map(|_| TokenInstruction::TransferChecked { amount: 1, decimals: 6 })
+            .collect();
+        let result = batch(&token_program_id, large_batch);
+        assert!(result.is_err());
+    }
+
     proptest! {
         #![proptest_config(ProptestConfig::with_cases(1024))]
         #[test]
