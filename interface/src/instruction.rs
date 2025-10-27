@@ -731,6 +731,21 @@ pub enum TokenInstruction<'a> {
     ScaledUiAmountExtension,
     /// Instruction prefix for instructions to the pausable extension
     PausableExtension,
+    // 45
+    /// Executes a batch of token instructions in sequence. This is useful to
+    /// avoid overhead when making Cross Program Invocations (CPI) by batching
+    /// multiple token operations into a single instruction.
+    ///
+    /// The batch instruction performs explicit ownership validation on all
+    /// accounts to prevent spoofing attacks. Each inner instruction is
+    /// executed sequentially with the same program context.
+    ///
+    /// Accounts expected by this instruction:
+    ///   Variable accounts, depends on the inner instructions being executed
+    Batch {
+        /// The list of token instructions to execute in sequence
+        instructions: Vec<TokenInstruction<'a>>,
+    },
 }
 impl<'a> TokenInstruction<'a> {
     /// Unpacks a byte buffer into a
