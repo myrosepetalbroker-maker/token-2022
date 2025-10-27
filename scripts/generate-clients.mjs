@@ -15,6 +15,9 @@ const jsClient = path.join(__dirname, '..', 'clients', 'js');
 codama.accept(
   renderJavaScriptVisitor(path.join(jsClient, 'src', 'generated'), {
     prettier: require(path.join(jsClient, '.prettierrc.json')),
+    dependencyMap: {
+      '@solana/web3.js': '@solana/kit',
+    },
   })
 );
 
