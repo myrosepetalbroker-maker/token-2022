@@ -51,10 +51,43 @@ zx ./scripts/generate-clients.mjs
 npm run fix:imports
 ```
 
+### Environment Cleanup
+
+The repository is configured to keep the environment clean:
+
+- **Build artifacts** (`dist/`, `node_modules/`) are automatically gitignored
+- **No manual cleanup needed** - gitignore handles exclusions
+- **Clean working tree** - only source files are tracked
+
+To verify clean state:
+```bash
+git status  # Should show clean working tree
+```
+
 ## Security
 
 All scripts are designed to be minimal and secure:
-- ✅ No external network requests
-- ✅ Only modifies generated files in expected locations
-- ✅ Validates changes before writing
-- ✅ Clear error messages and logging
+
+### Network Security
+- ✅ **No external network requests**: Scripts operate entirely offline
+- ✅ **No data transmission**: All operations are local file system only
+- ✅ **No API calls**: No remote services or dependencies contacted
+- ✅ **Deterministic behavior**: Same input always produces same output
+
+### File System Security
+- ✅ **Isolated operations**: Only modifies generated files in expected locations
+- ✅ **Path validation**: Uses secure path joining (no path traversal)
+- ✅ **Read-only where possible**: Validates changes before writing
+- ✅ **Error handling**: Clear error messages without exposing sensitive data
+
+### Environment Security
+- ✅ **No environment variable access**: Scripts don't read/write env vars
+- ✅ **Clean execution**: No temporary files or side effects
+- ✅ **Build artifact isolation**: node_modules and dist are gitignored
+- ✅ **Minimal permissions**: Only requires read/write to specific files
+
+### Best Practices
+- All changes are logged clearly
+- Scripts fail fast with descriptive errors
+- No use of eval() or dynamic code execution
+- Dependencies are minimal and audited
