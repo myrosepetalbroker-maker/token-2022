@@ -36,7 +36,41 @@ npm run generate:clients  # Includes fix:imports
 ```
 
 **What it fixes:**
-- Changes `@solana/web3.js` → `@solana/kit` in `clients/js/src/generated/errors/associatedToken.ts`
+- Changes `@solana/web3.js` → `@solana/kit` in generated error files
+
+### `maintain-environment.mjs`
+
+Automatically maintains a clean development environment.
+
+**Features:**
+- Cleans build artifacts (dist, node_modules)
+- Verifies gitignore compliance
+- Ensures script permissions are correct
+- Checks workspace integrity
+
+**Usage:**
+```bash
+npm run maintain
+```
+
+Or run automatically via:
+```bash
+npm install  # Runs postinstall hook
+```
+
+### `install-git-hooks.mjs`
+
+Installs git hooks for automatic environment maintenance.
+
+**Hooks installed:**
+- `pre-commit`: Environment checks before commits
+- `post-merge`: Cleanup after merges
+- `post-checkout`: Update after branch switches
+
+**Usage:**
+```bash
+npm run setup:hooks
+```
 
 ## Development Workflow
 

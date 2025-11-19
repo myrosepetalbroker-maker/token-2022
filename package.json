@@ -2,7 +2,10 @@
   "private": true,
   "scripts": {
     "generate:clients": "zx ./scripts/generate-clients.mjs && node ./scripts/fix-generated-imports.mjs",
-    "fix:imports": "node ./scripts/fix-generated-imports.mjs"
+    "fix:imports": "node ./scripts/fix-generated-imports.mjs",
+    "maintain": "node ./scripts/maintain-environment.mjs",
+    "setup:hooks": "node ./scripts/install-git-hooks.mjs",
+    "postinstall": "node ./scripts/maintain-environment.mjs"
   },
   "devDependencies": {
     "@codama/renderers-js": "^1.4.3",

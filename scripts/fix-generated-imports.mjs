@@ -8,7 +8,7 @@
  * Run this after generating clients with: npm run generate:clients
  */
 
-import { readFileSync, writeFileSync } from 'fs';
+import { readFileSync, writeFileSync, existsSync } from 'fs';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
 
@@ -26,24 +26,47 @@ const filePath = join(
   'associatedToken.ts'
 );
 
+// Files that need fixing (all generated error files in js client)
+const filesToFix = [
+  filePath,
+  // Add other potential files if needed in the future
+];
+
+let fixedCount = 0;
+let alreadyCorrect = 0;
+
 try {
   console.log('🦊 Fixing generated import paths...');
   
-  let content = readFileSync(filePath, 'utf8');
+  for (const targetFile of filesToFix) {
+    if (!existsSync(targetFile)) {
+      continue;
+    }
+    
+    let content = readFileSync(targetFile, 'utf8');
+    
+    // Replace @solana/web3.js with @solana/kit (for js client)
+    const originalContent = content;
+    content = content.replace(
+      /(} from ['"])@solana\/web3\.js(['"];)/g,
+      "$1@solana/kit$2"
+    );
+    
+    if (content !== originalContent) {
+      writeFileSync(targetFile, content, 'utf8');
+      const fileName = targetFile.split('/').pop();
+      console.log(`✅ Fixed import path in ${fileName}`);
+      console.log('   Changed: @solana/web3.js → @solana/kit');
+      fixedCount++;
+    } else {
+      alreadyCorrect++;
+    }
+  }
   
-  // Replace @solana/web3.js with @solana/kit
-  const originalContent = content;
-  content = content.replace(
-    "} from '@solana/web3.js';",
-    "} from '@solana/kit';"
-  );
-  
-  if (content !== originalContent) {
-    writeFileSync(filePath, content, 'utf8');
-    console.log('✅ Fixed import path in associatedToken.ts');
-    console.log('   Changed: @solana/web3.js → @solana/kit');
+  if (fixedCount === 0) {
+    console.log('✅ All import paths already correct');
   } else {
-    console.log('✅ Import path already correct');
+    console.log(`\n✅ Fixed ${fixedCount} file(s)`);
   }
 } catch (error) {
   console.error('❌ Error fixing imports:', error.message);
