@@ -69,3 +69,8 @@ Finally, you may stop the local validator using the following command.
 ```sh
 make stop-test-validator
 ```
+
+## References
+
+For related projects and external dependencies, see:
+- [rosc commit 0faa57aa](https://github.com/myrosepetalbroker-maker/rosc/commit/0faa57aa27e10b7e97426854576b01d057960aaa)
