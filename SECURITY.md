@@ -36,3 +36,13 @@ Only the `spl-token-2022` program is included in the bounty scope, at [program](
 
 If you discover a critical security issue in an out-of-scope component, your finding
 may still be valuable.
+
+## Automated Security Scanning
+
+This repository uses automated security tools to help maintain code security:
+
+- **Cargo Audit**: Runs daily and on every push/PR to check for known security vulnerabilities in Rust dependencies
+- **CodeQL**: Performs static code analysis weekly and on every push/PR to identify potential security issues in both Rust and JavaScript code
+- **Dependabot**: Automatically checks for dependency updates and security patches daily
+
+These automated checks help catch security issues early but do not replace manual security reviews or responsible disclosure.
